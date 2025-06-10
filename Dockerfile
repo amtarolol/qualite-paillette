@@ -7,7 +7,7 @@ WORKDIR /app
 
 # Copier les fichiers de dépendances
 COPY package.json package-lock.json* ./
-RUN npm ci --only=production
+RUN npm ci --only=production --legacy-peer-deps
 
 # Stage 2: Builder
 FROM node:18-alpine AS builder
