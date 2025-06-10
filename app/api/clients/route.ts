@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { sql } from "@/lib/database"
+import { prisma } from "@/lib/prisma"
 import { clientSchema } from "@/types/client"
 
 export async function GET(request: NextRequest) {
@@ -8,23 +8,20 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search")
 
     if (search) {
-      const clients = await sql`
-        SELECT id, nom, prenom, date_naissance as "dateNaissance", 
-               adresse, code_postal as "codePostal", ville,
-               created_at as "createdAt", updated_at as "updatedAt"
-        FROM clients
-        WHERE LOWER(nom) LIKE LOWER(${`%${search}%`}) OR LOWER(prenom) LIKE LOWER(${`%${search}%`})
-        ORDER BY nom, prenom
-      `
+      const clients = await prisma.client.findMany({
+        where: {
+          OR: [
+            { nom: { contains: search, mode: "insensitive" } },
+            { prenom: { contains: search, mode: "insensitive" } },
+          ],
+        },
+        orderBy: [{ nom: "asc" }, { prenom: "asc" }],
+      })
       return NextResponse.json(clients)
     } else {
-      const clients = await sql`
-        SELECT id, nom, prenom, date_naissance as "dateNaissance", 
-               adresse, code_postal as "codePostal", ville,
-               created_at as "createdAt", updated_at as "updatedAt"
-        FROM clients
-        ORDER BY nom, prenom
-      `
+      const clients = await prisma.client.findMany({
+        orderBy: [{ nom: "asc" }, { prenom: "asc" }],
+      })
       return NextResponse.json(clients)
     }
   } catch (error) {
@@ -40,16 +37,18 @@ export async function POST(request: NextRequest) {
     // Validation des données
     const validatedData = clientSchema.parse(body)
 
-    const result = await sql`
-      INSERT INTO clients (nom, prenom, date_naissance, adresse, code_postal, ville)
-      VALUES (${validatedData.nom}, ${validatedData.prenom}, ${validatedData.dateNaissance}, 
-              ${validatedData.adresse}, ${validatedData.codePostal}, ${validatedData.ville})
-      RETURNING id, nom, prenom, date_naissance as "dateNaissance", 
-                adresse, code_postal as "codePostal", ville,
-                created_at as "createdAt", updated_at as "updatedAt"
-    `
+    const client = await prisma.client.create({
+      data: {
+        nom: validatedData.nom,
+        prenom: validatedData.prenom,
+        dateNaissance: new Date(validatedData.dateNaissance),
+        adresse: validatedData.adresse,
+        codePostal: validatedData.codePostal,
+        ville: validatedData.ville,
+      },
+    })
 
-    return NextResponse.json(result[0], { status: 201 })
+    return NextResponse.json(client, { status: 201 })
   } catch (error: any) {
     console.error("Error creating client:", error)
 

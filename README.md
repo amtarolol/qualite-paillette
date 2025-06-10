@@ -1,6 +1,6 @@
 # Client Management System
 
-Un système de gestion des fiches clients moderne développé avec Next.js, TypeScript et PostgreSQL, avec support SonarQube pour l'amélioration continue.
+Un système de gestion des fiches clients moderne développé avec Next.js, TypeScript, Prisma et PostgreSQL, avec support SonarQube pour l'amélioration continue.
 
 ## 🚀 Fonctionnalités
 
@@ -8,7 +8,7 @@ Un système de gestion des fiches clients moderne développé avec Next.js, Type
 - **Recherche avancée** : Recherche par nom et prénom en temps réel
 - **Interface moderne** : UI responsive avec shadcn/ui et Tailwind CSS
 - **Validation robuste** : Validation côté client et serveur avec Zod
-- **Base de données** : PostgreSQL avec Neon
+- **Base de données** : PostgreSQL avec Prisma ORM
 - **Qualité de code** : Support SonarQube, ESLint, TypeScript strict
 - **Tests** : Configuration Jest pour les tests unitaires
 
@@ -37,10 +37,17 @@ npm install
 DATABASE_URL=postgresql://username:password@host:port/database
 \`\`\`
 
-4. **Initialiser la base de données**
-- Exécuter les scripts SQL dans l'ordre :
-  - `scripts/01-create-tables.sql`
-  - `scripts/02-seed-data.sql`
+4. **Initialiser la base de données avec Prisma**
+\`\`\`bash
+# Générer le client Prisma
+npm run prisma:generate
+
+# Appliquer les migrations à la base de données
+npm run prisma:migrate
+
+# Alimenter la base de données avec des données de test
+npm run db:seed
+\`\`\`
 
 5. **Lancer le serveur de développement**
 \`\`\`bash
@@ -59,12 +66,14 @@ npm run dev
 │   ├── client-form.tsx   # Formulaire client
 │   └── delete-client-dialog.tsx
 ├── lib/                  # Utilitaires et configuration
-│   └── database.ts       # Configuration base de données
+│   └── prisma.ts         # Client Prisma singleton
+├── prisma/               # Configuration Prisma
+│   ├── schema.prisma     # Schéma de la base de données
+│   └── migrations/       # Migrations de la base de données
 ├── types/                # Types TypeScript
 │   └── client.ts         # Types et schémas client
-├── scripts/              # Scripts SQL
-│   ├── 01-create-tables.sql
-│   └── 02-seed-data.sql
+├── scripts/              # Scripts utilitaires
+│   └── seed.ts           # Script d'alimentation de la base
 └── __tests__/            # Tests unitaires
 \`\`\`
 
@@ -98,16 +107,44 @@ Le projet est configuré pour SonarQube avec :
 - Exclusions appropriées
 - Métriques de maintenabilité
 
-Configuration dans `sonar-project.properties`.
+Configuration dans \`sonar-project.properties\`.
+
+## 🗄️ Prisma ORM
+
+Le projet utilise Prisma comme ORM (Object-Relational Mapping) pour :
+- Définir le schéma de la base de données de manière déclarative
+- Générer des migrations automatiquement
+- Fournir un client type-safe pour interagir avec la base de données
+- Simplifier les requêtes complexes
+- Visualiser et manipuler les données via Prisma Studio
+
+### Commandes Prisma utiles :
+
+\`\`\`bash
+# Ouvrir Prisma Studio (interface d'administration de la base)
+npm run prisma:studio
+
+# Générer le client après modification du schéma
+npm run prisma:generate
+
+# Créer et appliquer une nouvelle migration
+npm run prisma:migrate
+
+# Pousser le schéma vers la base sans créer de migration
+npm run prisma:push
+
+# Alimenter la base de données
+npm run db:seed
+\`\`\`
 
 ## 🔧 API Endpoints
 
-- `GET /api/clients` - Liste tous les clients
-- `GET /api/clients?search=term` - Recherche clients
-- `POST /api/clients` - Créer un client
-- `GET /api/clients/[id]` - Récupérer un client
-- `PUT /api/clients/[id]` - Modifier un client  
-- `DELETE /api/clients/[id]` - Supprimer un client
+- \`GET /api/clients\` - Liste tous les clients
+- \`GET /api/clients?search=term\` - Recherche clients
+- \`POST /api/clients\` - Créer un client
+- \`GET /api/clients/[id]\` - Récupérer un client
+- \`PUT /api/clients/[id]\` - Modifier un client  
+- \`DELETE /api/clients/[id]\` - Supprimer un client
 
 ## 📝 Modèle de données
 
@@ -116,12 +153,12 @@ interface Client {
   id: number
   nom: string
   prenom: string
-  dateNaissance: string
+  dateNaissance: Date
   adresse: string
   codePostal: string
   ville: string
-  createdAt: string
-  updatedAt: string
+  createdAt: Date
+  updatedAt: Date
 }
 \`\`\`
 
@@ -133,7 +170,7 @@ npm run build
 \`\`\`
 
 2. **Variables d'environnement**
-- Configurer `DATABASE_URL` en production
+- Configurer \`DATABASE_URL\` en production
 
 3. **Déploiement Vercel**
 - Connecter le repository GitHub
@@ -143,18 +180,21 @@ npm run build
 ## 🤝 Contribution
 
 1. Fork le projet
-2. Créer une branche feature (`git checkout -b feature/AmazingFeature`)
-3. Commit les changements (`git commit -m 'Add AmazingFeature'`)
-4. Push vers la branche (`git push origin feature/AmazingFeature`)
+2. Créer une branche feature (\`git checkout -b feature/AmazingFeature\`)
+3. Commit les changements (\`git commit -m 'Add AmazingFeature'\`)
+4. Push vers la branche (\`git push origin feature/AmazingFeature\`)
 5. Ouvrir une Pull Request
 
 ## 📄 Licence
 
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+Ce projet est sous licence MIT. Voir le fichier \`LICENSE\` pour plus de détails.
 
 ## 🆘 Support
 
 Pour toute question ou problème :
 - Ouvrir une issue sur GitHub
-- Consulter la documentation
+- Consulter la documentation Prisma
 - Vérifier les logs d'erreur
+\`\`\`
+
+Créons un fichier .env d'exemple :

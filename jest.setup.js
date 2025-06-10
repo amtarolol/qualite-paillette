@@ -22,5 +22,19 @@ jest.mock("next/navigation", () => ({
   },
 }))
 
+// Mock Prisma
+jest.mock("@/lib/prisma", () => ({
+  prisma: {
+    client: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      count: jest.fn(),
+    },
+  },
+}))
+
 // Mock environment variables
 process.env.DATABASE_URL = "postgresql://test:test@localhost:5432/test"
