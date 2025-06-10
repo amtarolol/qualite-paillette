@@ -19,7 +19,14 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "prisma:push": "prisma db push",
-    "db:seed": "tsx scripts/seed.ts"
+    "prisma:deploy": "prisma migrate deploy",
+    "db:seed": "tsx scripts/seed.ts",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up -d",
+    "docker:clean": "docker-compose down -v && docker system prune -f"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -74,6 +81,7 @@
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.6",
+    "wait-on": "^7.2.0",
     "zod": "latest"
   },
   "devDependencies": {
@@ -91,6 +99,7 @@
     "typescript",
     "postgresql",
     "prisma",
+    "docker",
     "sonarqube",
     "client-management"
   ],

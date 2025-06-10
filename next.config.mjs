@@ -9,6 +9,11 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // Configuration pour Docker
+  output: 'standalone',
+  experimental: {
+    outputFileTracingRoot: undefined,
+  },
 }
 
 export default nextConfig
