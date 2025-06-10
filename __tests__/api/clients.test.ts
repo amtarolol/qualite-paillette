@@ -49,7 +49,11 @@ describe("/api/clients", () => {
       const request = new NextRequest("http://localhost:3000/api/clients?search=Dupont")
       const response = await GET(request)
 
-      expect(sql).toHaveBeenCalledWith(expect.stringContaining("WHERE LOWER(nom) LIKE LOWER($1)"), ["%Dupont%"])
+      expect(sql).toHaveBeenCalledWith(
+        expect.arrayContaining([expect.stringContaining("WHERE LOWER(nom) LIKE LOWER")]),
+        expect.stringContaining("%Dupont%"),
+        expect.stringContaining("%Dupont%"),
+      )
     })
   })
 

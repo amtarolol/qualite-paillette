@@ -7,20 +7,24 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const search = searchParams.get("search")
 
-    let query = `
-      SELECT id, nom, prenom, date_naissance as "dateNaissance", 
-             adresse, code_postal as "codePostal", ville,
-             created_at as "createdAt", updated_at as "updatedAt"
-      FROM clients
-    `
-
     if (search) {
-      query += ` WHERE LOWER(nom) LIKE LOWER($1) OR LOWER(prenom) LIKE LOWER($1)`
-      const clients = await sql(query, [`%${search}%`])
+      const clients = await sql`
+        SELECT id, nom, prenom, date_naissance as "dateNaissance", 
+               adresse, code_postal as "codePostal", ville,
+               created_at as "createdAt", updated_at as "updatedAt"
+        FROM clients
+        WHERE LOWER(nom) LIKE LOWER(${`%${search}%`}) OR LOWER(prenom) LIKE LOWER(${`%${search}%`})
+        ORDER BY nom, prenom
+      `
       return NextResponse.json(clients)
     } else {
-      query += ` ORDER BY nom, prenom`
-      const clients = await sql(query)
+      const clients = await sql`
+        SELECT id, nom, prenom, date_naissance as "dateNaissance", 
+               adresse, code_postal as "codePostal", ville,
+               created_at as "createdAt", updated_at as "updatedAt"
+        FROM clients
+        ORDER BY nom, prenom
+      `
       return NextResponse.json(clients)
     }
   } catch (error) {
