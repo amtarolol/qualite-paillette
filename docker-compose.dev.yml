@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # Base de données PostgreSQL pour le développement
+  db:
+    image: postgres:15-alpine
+    container_name: client-management-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: client_management_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - client-management-dev-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Application Next.js en mode développement
+  app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: client-management-app-dev
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/client_management_dev?schema=public
+      - NEXTAUTH_URL=http://localhost:3001
+      - NEXTAUTH_SECRET=dev-secret-key
+    ports:
+      - "3001:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - client-management-dev-network
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+
+volumes:
+  postgres_dev_data:
+    driver: local
+
+networks:
+  client-management-dev-network:
+    driver: bridge
