@@ -31,7 +31,7 @@ prod-up:
 
 # Démarrer en développement
 dev-up:
-	docker-compose -f docker-compose.dev.yml up -d
+	docker-compose  up -d
 	@echo "🚀 Application démarrée en développement sur http://localhost:3000"
 
 # Arrêter l'application

@@ -1,5 +1,3 @@
-# Fichiers et dossiers à ignorer lors du build Docker
-
 # Dependencies
 node_modules
 npm-debug.log*
@@ -14,6 +12,12 @@ out/
 build/
 dist/
 
+# TypeScript
+*.tsbuildinfo
+
+# Turborepo (si applicable)
+.turbo/
+
 # Environment files
 .env
 .env.local
@@ -21,7 +25,7 @@ dist/
 .env.test.local
 .env.production.local
 
-# IDE
+# IDEs and editors
 .vscode/
 .idea/
 *.swp
@@ -35,11 +39,6 @@ Thumbs.db
 .git/
 .gitignore
 
-# Docker
-Dockerfile*
-docker-compose*.yml
-.dockerignore
-
 # Tests
 coverage/
 .nyc_output/
@@ -47,6 +46,7 @@ coverage/
 # Logs
 logs/
 *.log
+.eslintcache
 
 # Runtime data
 pids/
