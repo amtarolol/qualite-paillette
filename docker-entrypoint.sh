@@ -2,17 +2,23 @@
 
 set -e
 
-echo "🚀 Démarrage en mode développement..."
+echo "🕒 Attente de la base de données PostgreSQL..."
+npx wait-on tcp:db:5432 || echo "Skip wait if using Neon"
 
-# Attendre que la base de données soit prête
-echo "⏳ Attente de la base de données..."
-npx wait-on tcp:db:5432 -t 30000
+echo "✅ Base de données disponible"
 
-# Appliquer les migrations Prisma
-echo "📊 Application des migrations Prisma..."
-npx prisma migrate dev --name init
+# Génération du client Prisma
+echo "⚙️ Génération du client Prisma..."
+npx prisma generate
 
-echo "🎉 Environnement de développement prêt!"
+# Déploiement des migrations (utile si tu veux garder ta base à jour automatiquement)
+echo "🧩 Application des migrations..."
+npx prisma migrate deploy
 
-# Exécuter la commande passée en argument
+# Exécution du seed
+echo "🌱 Insertion des données de seed..."
+npx prisma db seed
+
+# Lancement de l'application
+echo "🚀 Lancement de l'application..."
 exec "$@"

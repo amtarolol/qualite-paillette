@@ -31,8 +31,8 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/client_management_dev?schema=public
-      - NEXTAUTH_URL=http://localhost:3001
+      - DATABASE_URL=${DATABASE_URL}
+      - NEXTAUTH_URL=http://localhost:3000
       - NEXTAUTH_SECRET=dev-secret-key
     ports:
       - "3000:3000"
