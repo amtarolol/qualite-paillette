@@ -1,65 +1,33 @@
-# Dockerfile multi-stage pour optimiser la taille de l'image
+FROM node:18-slim
 
-# Stage 1: Dependencies
-FROM node:18-alpine AS deps
-RUN apk add --no-cache libc6-compat
 WORKDIR /app
+
+# Installer les dépendances système nécessaires (openssl, netcat, etc.)
+RUN apt-get update && apt-get install -y openssl libssl-dev netcat-openbsd
+
+
+# Copier et configurer le script d'entrée en premier
+COPY docker-entrypoint.sh ./
+RUN chmod +x ./docker-entrypoint.sh
 
 # Copier les fichiers de dépendances
 COPY package.json package-lock.json* ./
-RUN npm ci --only=production --legacy-peer-deps
 
-# Stage 2: Builder
-FROM node:18-alpine AS builder
-WORKDIR /app
+# Installer toutes les dépendances (dev + prod)
+RUN npm ci --legacy-peer-deps
 
-# Copier les dépendances depuis le stage précédent
-COPY --from=deps /app/node_modules ./node_modules
+# Installer wait-on globalement (nécessaire pour le script)
+RUN npm install -g wait-on pnpm
+
+# Copier le code source
 COPY . .
-
-# Variables d'environnement pour le build
-ENV NEXT_TELEMETRY_DISABLED 1
 
 # Générer le client Prisma
 RUN npx prisma generate
 
-# Build de l'application
-RUN npm run build
-
-# Stage 3: Runner
-FROM node:18-alpine AS runner
-WORKDIR /app
-
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
-
-# Créer un utilisateur non-root
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# Copier les fichiers nécessaires
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
-
-# Copier les fichiers de build
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-# Copier Prisma
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-
-# Copier le script de démarrage
-COPY --chown=nextjs:nodejs docker-entrypoint.sh ./
-RUN chmod +x docker-entrypoint.sh
-
-USER nextjs
-
+# Exposer le port
 EXPOSE 3000
 
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
-
+# Script d'entrée pour le développement
 ENTRYPOINT ["./docker-entrypoint.sh"]
-CMD ["node", "server.js"]
+CMD ["npm", "run", "dev"]

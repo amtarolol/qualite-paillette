@@ -1,30 +1,24 @@
 #!/bin/sh
 
-# Script d'entrée pour Docker
 set -e
 
-echo "🚀 Démarrage de l'application Client Management System..."
+echo "🕒 Attente de la base de données PostgreSQL..."
+npx wait-on tcp:db:5432 || echo "Skip wait if using Neon"
 
-# Attendre que la base de données soit prête
-echo "⏳ Attente de la base de données..."
-npx wait-on tcp:db:5432 -t 30000
+echo "✅ Base de données disponible"
 
-# Appliquer les migrations Prisma
-echo "📊 Application des migrations Prisma..."
+# Génération du client Prisma
+echo "⚙️ Génération du client Prisma..."
+npx prisma generate
+
+# Déploiement des migrations (utile si tu veux garder ta base à jour automatiquement)
+echo "🧩 Application des migrations..."
 npx prisma migrate deploy
 
-# Vérifier si la base de données contient des données
-echo "🔍 Vérification des données existantes..."
-CLIENT_COUNT=$(npx prisma db execute --stdin <<< "SELECT COUNT(*) FROM clients;" | tail -n 1 | tr -d ' ')
+# Exécution du seed
+echo "🌱 Insertion des données de seed..."
+npx prisma db seed
 
-if [ "$CLIENT_COUNT" = "0" ]; then
-    echo "🌱 Initialisation des données de test..."
-    npx tsx scripts/seed.ts
-else
-    echo "✅ Base de données déjà initialisée ($CLIENT_COUNT clients trouvés)"
-fi
-
-echo "🎉 Application prête à démarrer!"
-
-# Exécuter la commande passée en argument
+# Lancement de l'application
+echo "🚀 Lancement de l'application..."
 exec "$@"
