@@ -14,9 +14,17 @@ pipeline {
             }
         }
 
+        stage('Debug') {
+            steps {
+                echo "Branche détectée : ${env.BRANCH_NAME}"
+            }
+        }
+
         stage('Install dependencies') {
             when {
-                branch 'main'
+                expression {
+                    return env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'origin/main'
+                }
             }
             steps {
                 sh 'docker compose run --rm app npm install'
@@ -25,7 +33,9 @@ pipeline {
 
         stage('Build') {
             when {
-                branch 'main'
+                expression {
+                    return env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'origin/main'
+                }
             }
             steps {
                 sh 'docker compose run --rm app npm run build'
@@ -34,7 +44,9 @@ pipeline {
 
         stage('Test') {
             when {
-                branch 'main'
+                expression {
+                    return env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'origin/main'
+                }
             }
             steps {
                 sh 'docker compose run --rm app npm test || true'
@@ -43,7 +55,9 @@ pipeline {
 
         stage('Deploy') {
             when {
-                branch 'main'
+                expression {
+                    return env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'origin/main'
+                }
             }
             steps {
                 sh 'docker compose up -d'
