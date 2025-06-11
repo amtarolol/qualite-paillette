@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # Next.js app
   app:
     build:
       context: .
@@ -9,7 +10,7 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=${DATABASE_URL} # Neon connection string here
+      - DATABASE_URL=${DATABASE_URL}  # Neon connection string
       - NEXTAUTH_URL=http://localhost:3000
       - NEXTAUTH_SECRET=dev-secret-key
     ports:

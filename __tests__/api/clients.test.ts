@@ -1,5 +1,7 @@
 import { GET, POST } from "@/app/api/clients/route"
 import { NextRequest } from "next/server"
+import React from "react"
+
 
 // Mock Prisma
 jest.mock("@/lib/prisma", () => ({
