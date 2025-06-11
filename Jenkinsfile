@@ -16,14 +16,14 @@ pipeline {
 
         stage('Debug') {
             steps {
-                echo "Branche détectée : ${env.BRANCH_NAME}"
+                echo "GIT_BRANCH = ${env.GIT_BRANCH}"
             }
         }
 
         stage('Install dependencies') {
             when {
                 expression {
-                    return env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'origin/main'
+                    return env.GIT_BRANCH == 'origin/main' || env.GIT_BRANCH == 'main'
                 }
             }
             steps {
@@ -34,7 +34,7 @@ pipeline {
         stage('Build') {
             when {
                 expression {
-                    return env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'origin/main'
+                    return env.GIT_BRANCH == 'origin/main' || env.GIT_BRANCH == 'main'
                 }
             }
             steps {
@@ -45,7 +45,7 @@ pipeline {
         stage('Test') {
             when {
                 expression {
-                    return env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'origin/main'
+                    return env.GIT_BRANCH == 'origin/main' || env.GIT_BRANCH == 'main'
                 }
             }
             steps {
@@ -56,7 +56,7 @@ pipeline {
         stage('Deploy') {
             when {
                 expression {
-                    return env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'origin/main'
+                    return env.GIT_BRANCH == 'origin/main' || env.GIT_BRANCH == 'main'
                 }
             }
             steps {
