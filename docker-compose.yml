@@ -10,8 +10,7 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=${DATABASE_URL}  # Neon connection string
-
+      - DATABASE_URL=${DATABASE_URL}
       - NEXTAUTH_URL=http://localhost:3000
       - NEXTAUTH_SECRET=dev-secret-key
     ports:
@@ -23,16 +22,22 @@ services:
     networks:
       - app-network
 
+  # Jenkins avec Docker CLI
   jenkins:
-    image: jenkins/jenkins:lts
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
+    image: custom-jenkins-docker
+    container_name: jenkins-ci
+    user: root
+    restart: unless-stopped
     ports:
       - "8080:8080"
       - "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
-    user: root
-    restart: unless-stopped
+      - .:/workspace
     networks:
       - app-network
 

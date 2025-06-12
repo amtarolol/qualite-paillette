@@ -1,34 +1,33 @@
 # Use official Node.js LTS slim image
 FROM node:18-slim
 
-# Set working directory inside container
 WORKDIR /app
 
-# Install system dependencies for openssl, netcat (optional), etc.
-RUN apt-get update && apt-get install -y openssl libssl-dev netcat-openbsd && rm -rf /var/lib/apt/lists/*
+# Installer les dépendances système
+RUN apt-get update \
+  && apt-get install -y openssl libssl-dev netcat-openbsd \
+  && rm -rf /var/lib/apt/lists/*
 
-# Copy package files and install dependencies
-COPY package.json package-lock.json* ./
-RUN npm ci --legacy-peer-deps
+# Copier uniquement les fichiers nécessaires pour npm
+COPY package.json package-lock.json ./
 
-# Install wait-on globally (optional, useful for wait scripts)
+# Installer les dépendances avec legacy-peer-deps
+RUN npm install --legacy-peer-deps
+
+# Installer des outils utilitaires globalement
 RUN npm install -g wait-on pnpm
 
-# Copy all source files
+# Copier le reste du code
 COPY . .
 
-# Generate Prisma client
+# Générer le client Prisma
 RUN npx prisma generate
 
-# Expose Next.js default port
 EXPOSE 3000
 
-# Copy entrypoint script and make executable
+# Préparer le script d'entrée
 COPY docker-entrypoint.sh ./
 RUN chmod +x docker-entrypoint.sh
 
-# Entrypoint to run migrations before starting the app
 ENTRYPOINT ["./docker-entrypoint.sh"]
-
-# Default command to start Next.js in dev or production mode
 CMD ["npm", "run", "dev"]
