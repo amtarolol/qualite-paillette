@@ -8,7 +8,9 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y openssl libssl-dev netcat-openbsd && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
+COPY package.json package-lock.json* ./
 RUN npm install --legacy-peer-deps
+
 
 # Install wait-on globally (optional, useful for wait scripts)
 RUN npm install -g wait-on pnpm
