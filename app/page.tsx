@@ -49,11 +49,11 @@ export default function HomePage() {
       return
     }
 
-    const filtered = clients.filter(
-        (client) =>
-            client.nom.toLowerCase().includes(term) ||
-            client.prenom.toLowerCase().includes(term),
-    )
+    const filtered = clients.filter((client) => {
+      const nom = (client.nom ?? "").toLowerCase()
+      const prenom = (client.prenom ?? "").toLowerCase()
+      return nom.includes(term) || prenom.includes(term)
+    })
     setFilteredClients(filtered)
   }
 
