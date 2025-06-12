@@ -1,6 +1,8 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react"
 import { ClientForm } from "@/components/client-form"
 import type { Client } from "@/types/client"
+import React from "react"
+
 
 // Mock fetch
 global.fetch = jest.fn()

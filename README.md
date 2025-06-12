@@ -1,6 +1,6 @@
 # Client Management System
 
-Un système de gestion des fiches clients moderne développé avec Next.js, TypeScript, Prisma et PostgreSQL, avec support SonarQube pour l'amélioration continue.
+Un système de gestion des fiches clients moderne développé avec Next.js, TypeScript, Prisma et PostgreSQL, avec support SonarQube pour l'amélioration continue CI/CD.
 
 ## 🚀 Fonctionnalités
 
