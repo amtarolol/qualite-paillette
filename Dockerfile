@@ -7,9 +7,10 @@ WORKDIR /app
 # Install system dependencies for openssl, netcat (optional), etc.
 RUN apt-get update && apt-get install -y openssl libssl-dev netcat-openbsd && rm -rf /var/lib/apt/lists/*
 
-# Copy package files and install dependencies
+# Install dependencies
 COPY package.json package-lock.json* ./
-RUN npm ci --legacy-peer-deps
+RUN npm install --legacy-peer-deps
+
 
 # Install wait-on globally (optional, useful for wait scripts)
 RUN npm install -g wait-on pnpm
