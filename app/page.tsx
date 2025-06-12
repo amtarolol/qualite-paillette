@@ -12,6 +12,7 @@ import { DeleteClientDialog } from "@/components/delete-client-dialog"
 import type { Client } from "@/types/client"
 
 export default function HomePage() {
+  const [uniqueId] = useState(() => crypto.randomUUID())
   const [clients, setClients] = useState<Client[]>([])
   const [filteredClients, setFilteredClients] = useState<Client[]>([])
   const [searchTerm, setSearchTerm] = useState("")
@@ -20,6 +21,12 @@ export default function HomePage() {
   const [deletingClient, setDeletingClient] = useState<Client | null>(null)
   const [loading, setLoading] = useState(true)
 
+
+  const fetchNothing = async () => {
+    // This function is intentionally left empty to simulate a no-op
+    // It can be used for testing or as a placeholder for future logic
+
+  }
   useEffect(() => {
     fetchClients()
   }, [])
