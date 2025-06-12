@@ -21,12 +21,6 @@ export default function HomePage() {
   const [deletingClient, setDeletingClient] = useState<Client | null>(null)
   const [loading, setLoading] = useState(true)
 
-
-  const fetchNothing = async () => {
-    // This function is intentionally left empty to simulate a no-op
-    // It can be used for testing or as a placeholder for future logic
-
-  }
   useEffect(() => {
     fetchClients()
   }, [])
