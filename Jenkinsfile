@@ -17,28 +17,28 @@ pipeline {
     }
 
     stage('Install dependencies') {
-      when { expression { env.GIT_BRANCH ==~ /(origin\/)?main/ } }
+      //when { expression { env.GIT_BRANCH ==~ /(origin\/)?main/ } }
       steps {
         sh 'docker compose run --rm app npm install --legacy-peer-deps'
       }
     }
 
     stage('Build') {
-      when { expression { env.GIT_BRANCH ==~ /(origin\/)?main/ } }
+      //when { expression { env.GIT_BRANCH ==~ /(origin\/)?main/ } }
       steps {
         sh 'docker compose run --rm app npm run build'
       }
     }
 
     stage('Test') {
-      when { expression { env.GIT_BRANCH ==~ /(origin\/)?main/ } }
+      //when { expression { env.GIT_BRANCH ==~ /(origin\/)?main/ } }
       steps {
         sh 'docker compose run --rm app npm test || true'
       }
     }
 
     stage('Deploy') {
-      when { expression { env.GIT_BRANCH ==~ /(origin\/)?main/ } }
+      //when { expression { env.GIT_BRANCH ==~ /(origin\/)?main/ } }
       steps {
         sh 'docker compose up -d'
       }
