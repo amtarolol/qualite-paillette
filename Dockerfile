@@ -9,7 +9,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # Copier uniquement les fichiers nécessaires pour npm
-COPY package.json package-lock.json ./
+COPY package.json ./
 
 # Installer les dépendances avec legacy-peer-deps
 RUN npm install --legacy-peer-deps
