@@ -12,7 +12,6 @@ import { DeleteClientDialog } from "@/components/delete-client-dialog"
 import type { Client } from "@/types/client"
 
 export default function HomePage() {
-  const [uniqueId] = useState(() => crypto.randomUUID())
   const [clients, setClients] = useState<Client[]>([])
   const [filteredClients, setFilteredClients] = useState<Client[]>([])
   const [searchTerm, setSearchTerm] = useState("")
