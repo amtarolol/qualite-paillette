@@ -41,17 +41,18 @@ export default function HomePage() {
       setLoading(false)
     }
   }
-
   const filterClients = () => {
-    if (!searchTerm.trim()) {
+    const term = searchTerm?.toLowerCase().trim() ?? ''
+
+    if (term === '') {
       setFilteredClients(clients)
       return
     }
 
     const filtered = clients.filter(
-      (client) =>
-        client.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        client.prenom.toLowerCase().includes(searchTerm.toLowerCase()),
+        (client) =>
+            client.nom.toLowerCase().includes(term) ||
+            client.prenom.toLowerCase().includes(term),
     )
     setFilteredClients(filtered)
   }
